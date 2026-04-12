@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQLOps — Hackathon Project Overview</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --accent: #f59e0b;
+            --accent-light: #fcd34d;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg: #ffffff;
+            --bg-soft: #f8fafc;
+            --bg-card: #f1f5f9;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        /* Print styles */
+        @media print {
+            body { font-size: 11px; line-height: 1.5; }
+            .page-break { page-break-before: always; }
+            .no-print { display: none !important; }
+            .cover { min-height: auto; padding: 40px 0; }
+            section { padding: 20px 40px; }
+            .hero-badge { font-size: 10px; }
+            h1 { font-size: 28px; }
+            h2 { font-size: 20px; }
+            h3 { font-size: 16px; }
+            .card { break-inside: avoid; }
+            .task-card { break-inside: avoid; }
+        }
+
+        /* Cover Page */
+        .cover {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 60px 40px;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 30%, #4338ca 60%, #6366f1 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 50%, rgba(99, 102, 241, 0.3) 0%, transparent 50%),
+                        radial-gradient(ellipse at 70% 50%, rgba(245, 158, 11, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .cover > * { position: relative; z-index: 1; }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 50px;
+            padding: 8px 24px;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .cover h1 {
+            font-size: 56px;
+            font-weight: 900;
+            letter-spacing: -2px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff 0%, #c7d2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cover .tagline {
+            font-size: 22px;
+            font-weight: 300;
+            color: rgba(255,255,255,0.85);
+            margin-bottom: 40px;
+            max-width: 600px;
+        }
+
+        .cover-meta {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .cover-meta-item {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            padding: 16px 24px;
+            backdrop-filter: blur(10px);
+            min-width: 160px;
+        }
+
+        .cover-meta-item .label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 4px;
+        }
+
+        .cover-meta-item .value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .db-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 40px rgba(99, 102, 241, 0.5));
+        }
+
+        /* Sections */
+        section {
+            padding: 50px 60px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        section + section {
+            border-top: 1px solid var(--border);
+        }
+
+        h2 {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        h2 .emoji {
+            margin-right: 8px;
+        }
+
+        .section-subtitle {
+            font-size: 15px;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-weight: 400;
+        }
+
+        h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            margin-top: 28px;
+            margin-bottom: 12px;
+        }
+
+        p {
+            margin-bottom: 14px;
+            color: #334155;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .card-highlight {
+            border-left: 4px solid var(--primary);
+        }
+
+        .card-success {
+            border-left: 4px solid var(--success);
+            background: #f0fdf4;
+        }
+
+        .card-warning {
+            border-left: 4px solid var(--accent);
+            background: #fffbeb;
+        }
+
+        /* Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        /* Task cards */
+        .task-card {
+            border-radius: 14px;
+            padding: 28px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .task-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .task-easy { background: #f0fdf4; }
+        .task-easy::before { background: linear-gradient(90deg, #10b981, #34d399); }
+        .task-easy .difficulty-label { background: #dcfce7; color: #166534; }
+
+        .task-medium { background: #fffbeb; }
+        .task-medium::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .task-medium .difficulty-label { background: #fef3c7; color: #92400e; }
+
+        .task-hard { background: #fef2f2; }
+        .task-hard::before { background: linear-gradient(90deg, #ef4444, #f87171); }
+        .task-hard .difficulty-label { background: #fee2e2; color: #991b1b; }
+
+        .difficulty-label {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 4px 12px;
+            border-radius: 50px;
+            margin-bottom: 12px;
+        }
+
+        .task-card h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .challenge-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .challenge-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .challenge-list li:last-child {
+            border-bottom: none;
+        }
+
+        .challenge-num {
+            background: rgba(0,0,0,0.08);
+            color: var(--text);
+            font-weight: 700;
+            font-size: 12px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 24px;
+            font-size: 13px;
+        }
+
+        th {
+            background: var(--primary-dark);
+            color: white;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        th:first-child { border-radius: 8px 0 0 0; }
+        th:last-child { border-radius: 0 8px 0 0; }
+
+        td {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:nth-child(even) td {
+            background: var(--bg-soft);
+        }
+
+        /* Score bar */
+        .score-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 6px 0;
+        }
+
+        .score-track {
+            flex: 1;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .score-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+            min-width: 36px;
+        }
+
+        /* Flow diagram */
+        .flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .flow-step {
+            background: var(--bg-soft);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: center;
+            min-width: 130px;
+        }
+
+        .flow-step .step-num {
+            background: var(--primary);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+            margin: 0 auto 8px;
+        }
+
+        .flow-step .step-title {
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .flow-step .step-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .flow-arrow {
+            font-size: 24px;
+            color: var(--primary);
+            padding: 0 6px;
+            font-weight: bold;
+        }
+
+        /* Code block */
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            padding: 20px 24px;
+            border-radius: 12px;
+            margin: 16px 0;
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+
+        .code-block .keyword { color: #c084fc; }
+        .code-block .string { color: #86efac; }
+        .code-block .comment { color: #64748b; }
+        .code-block .function { color: #38bdf8; }
+        .code-block .number { color: #fbbf24; }
+
+        /* Stats */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 20px;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 900;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        /* Checklist */
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist li {
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .check-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--success);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        /* Architecture diagram */
+        .arch-diagram {
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 24px 0;
+        }
+
+        .arch-row {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .arch-box {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 20px;
+            text-align: center;
+            min-width: 140px;
+        }
+
+        .arch-box.primary {
+            border-color: var(--primary);
+            background: #eef2ff;
+        }
+
+        .arch-box.accent {
+            border-color: var(--accent);
+            background: #fffbeb;
+        }
+
+        .arch-box.success {
+            border-color: var(--success);
+            background: #f0fdf4;
+        }
+
+        .arch-box-title {
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .arch-box-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .arch-connector {
+            text-align: center;
+            font-size: 20px;
+            color: var(--primary);
+            margin: 4px 0;
+        }
+
+        .arch-label {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        /* File tree */
+        .file-tree {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px 24px;
+            border-radius: 12px;
+            margin: 16px 0;
+            line-height: 1.8;
+        }
+
+        .file-tree .folder { color: #38bdf8; }
+        .file-tree .file { color: #86efac; }
+        .file-tree .desc { color: #64748b; }
+
+        /* Why section */
+        .why-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .why-card {
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            border: 1px solid #c7d2fe;
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .why-card .icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .why-card h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--primary-dark);
+        }
+
+        .why-card p {
+            font-size: 13px;
+            color: #475569;
+            margin: 0;
+        }
+
+        /* Print button */
+        .print-banner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--primary-dark);
+            color: white;
+            padding: 12px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            z-index: 100;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+        }
+
+        .print-banner button {
+            background: white;
+            color: var(--primary-dark);
+            border: none;
+            padding: 10px 28px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .print-banner button:hover {
+            background: #e0e7ff;
+        }
+
+        .print-banner p {
+            color: rgba(255,255,255,0.9);
+            margin: 0;
+            font-size: 14px;
+        }
+
+        /* Footer spacing for print banner */
+        body { padding-bottom: 70px; }
+
+        /* Reward visualization */
+        .reward-scale {
+            display: flex;
+            align-items: stretch;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+            height: 48px;
+        }
+
+        .reward-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 0 8px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        /* Separator */
+        .divider {
+            width: 60px;
+            height: 4px;
+            background: var(--primary-light);
+            border-radius: 2px;
+            margin: 0 auto 20px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="cover">
+    <div class="hero-badge">🏆 OpenEnv Hackathon — Round 1 Submission</div>
+    <div class="db-icon">🗄️</div>
+    <h1>SQLOps</h1>
+    <p class="tagline">An AI Training Environment for Real-World Database Operations</p>
+    <p style="color: rgba(255,255,255,0.6); font-size: 14px; max-width: 550px; margin-bottom: 30px;">
+        Teaching AI agents to write SQL queries, debug broken code, and perform complex data analysis 
+        — the #1 most-demanded skill in every tech company.
+    </p>
+    <div class="cover-meta">
+        <div class="cover-meta-item">
+            <div class="label">Framework</div>
+            <div class="value">OpenEnv + FastAPI</div>
+        </div>
+        <div class="cover-meta-item">
+            <div class="label">Tasks</div>
+            <div class="value">3 Levels × 3 Challenges</div>
+        </div>
+        <div class="cover-meta-item">
+            <div class="label">Database</div>
+            <div class="value">SQLite (In-Memory)</div>
+        </div>
+        <div class="cover-meta-item">
+            <div class="label">Deployment</div>
+            <div class="value">Docker + HF Spaces</div>
+        </div>
+    </div>
+</div>
+
+<!-- PAGE 1: WHAT IS THIS? -->
+<section>
+    <h2><span class="emoji">💡</span> What Is SQLOps?</h2>
+    <p class="section-subtitle">The simplest explanation of our project</p>
+
+    <div class="card card-highlight">
+        <p style="margin:0; font-size: 16px; line-height: 1.8;">
+            <strong>SQLOps</strong> is a training environment where an <strong>AI agent</strong> (like ChatGPT) 
+            learns to work with databases. Think of it as a <strong>"practice arena"</strong> — we give the AI 
+            a company database full of employees, departments, sales records, and projects. Then we ask it 
+            questions like <em>"How many engineers do we have?"</em> or <em>"Fix this broken query."</em> 
+            The AI writes SQL code, we check if it's correct, and give it a score from 0 to 1.
+        </p>
+    </div>
+
+    <h3>The Big Picture (How It Works)</h3>
+    <div class="flow">
+        <div class="flow-step">
+            <div class="step-num">1</div>
+            <div class="step-title">Reset</div>
+            <div class="step-desc">Load database &<br>first challenge</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+            <div class="step-num">2</div>
+            <div class="step-title">Observe</div>
+            <div class="step-desc">AI reads the schema<br>& question</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+            <div class="step-num">3</div>
+            <div class="step-title">Act</div>
+            <div class="step-desc">AI writes a<br>SQL query</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+            <div class="step-num">4</div>
+            <div class="step-title">Grade</div>
+            <div class="step-desc">We run the query<br>& check results</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+            <div class="step-num">5</div>
+            <div class="step-title">Reward</div>
+            <div class="step-desc">Score 0.0 to 1.0<br>with partial credit</div>
+        </div>
+    </div>
+
+    <h3>Why SQL? Why This Wins 🏆</h3>
+    <div class="why-grid">
+        <div class="why-card">
+            <div class="icon">🌍</div>
+            <h4>Real-World Relevance</h4>
+            <p>SQL is the #1 language used in data jobs. Every company with a database needs people (or AI) who can query it. This isn't a toy — it's what companies actually pay for.</p>
+        </div>
+        <div class="why-card">
+            <div class="icon">📊</div>
+            <h4>Perfect for Grading</h4>
+            <p>Unlike text generation, SQL answers can be checked exactly. Run the query, compare results — you either got the right answer or you didn't. No subjective scoring.</p>
+        </div>
+        <div class="why-card">
+            <div class="icon">⚡</div>
+            <h4>Lightweight to Run</h4>
+            <p>SQLite comes built into Python — zero extra packages. The entire environment runs on 2 vCPUs and 8GB RAM with room to spare. Fast startup, fast execution.</p>
+        </div>
+        <div class="why-card">
+            <div class="icon">📝</div>
+            <h4>Resume Gold</h4>
+            <p>Shows you understand AI/ML, databases, system design, Docker, and deployment all in one project. Recruiters will be impressed by the real-world practicality.</p>
+        </div>
+    </div>
+</section>
+
+<!-- PAGE 2: THE DATABASE -->
+<section class="page-break">
+    <h2><span class="emoji">🗃️</span> The Database</h2>
+    <p class="section-subtitle">A realistic company database with 6 interconnected tables</p>
+
+    <p>We create a fake (but realistic) company database called <strong>"TechCorp"</strong> with the following tables. All data is auto-generated with realistic names, dates, and relationships.</p>
+
+    <div class="stat-grid">
+        <div class="stat-box">
+            <div class="stat-number">6</div>
+            <div class="stat-label">Tables</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">50+</div>
+            <div class="stat-label">Employees</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">200+</div>
+            <div class="stat-label">Sales Records</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">100+</div>
+            <div class="stat-label">Reviews</div>
+        </div>
+    </div>
+
+    <table>
+        <tr>
+            <th>Table Name</th>
+            <th>What It Stores</th>
+            <th>Key Columns</th>
+        </tr>
+        <tr>
+            <td><strong>departments</strong></td>
+            <td>Company departments</td>
+            <td>id, name, budget, location, manager_id</td>
+        </tr>
+        <tr>
+            <td><strong>employees</strong></td>
+            <td>All company employees</td>
+            <td>id, first_name, last_name, email, hire_date, salary, department_id</td>
+        </tr>
+        <tr>
+            <td><strong>projects</strong></td>
+            <td>Company projects</td>
+            <td>id, name, department_id, start_date, end_date, budget, status</td>
+        </tr>
+        <tr>
+            <td><strong>project_assignments</strong></td>
+            <td>Who works on what project</td>
+            <td>id, employee_id, project_id, role, hours_allocated</td>
+        </tr>
+        <tr>
+            <td><strong>sales</strong></td>
+            <td>Sales transactions</td>
+            <td>id, employee_id, product_name, amount, sale_date, region</td>
+        </tr>
+        <tr>
+            <td><strong>performance_reviews</strong></td>
+            <td>Employee performance reviews</td>
+            <td>id, employee_id, review_date, rating, reviewer_id</td>
+        </tr>
+    </table>
+
+    <div class="card card-success">
+        <p style="margin:0;"><strong>💡 Key Insight:</strong> The tables are connected through foreign keys (e.g., employees belong to departments, sales are made by employees). This lets us create challenges that require JOINs, subqueries, and multi-table reasoning — exactly the skills that separate junior from senior SQL users.</p>
+    </div>
+</section>
+
+<!-- PAGE 3: THE 3 TASKS -->
+<section class="page-break">
+    <h2><span class="emoji">🎯</span> The 3 Tasks</h2>
+    <p class="section-subtitle">Easy → Medium → Hard, each with 3 challenges scored 0.0 to 1.0</p>
+
+    <!-- Task 1: Easy -->
+    <div class="task-card task-easy">
+        <div class="difficulty-label">✅ Easy</div>
+        <h3>Task 1: Data Retrieval</h3>
+        <p>The AI is asked plain-English questions about the database and must write correct SQL queries to get answers.</p>
+        
+        <ul class="challenge-list">
+            <li>
+                <span class="challenge-num">1</span>
+                <div>
+                    <strong>"How many active employees are in the Engineering department?"</strong><br>
+                    <span style="color: var(--text-muted); font-size: 13px;">Skills tested: COUNT, WHERE, JOIN</span>
+                </div>
+            </li>
+            <li>
+                <span class="challenge-num">2</span>
+                <div>
+                    <strong>"List employees hired after 2024-01-01 — show full name and department"</strong><br>
+                    <span style="color: var(--text-muted); font-size: 13px;">Skills tested: SELECT, JOIN, date filtering</span>
+                </div>
+            </li>
+            <li>
+                <span class="challenge-num">3</span>
+                <div>
+                    <strong>"Total salary budget per department — highest first"</strong><br>
+                    <span style="color: var(--text-muted); font-size: 13px;">Skills tested: GROUP BY, SUM, ORDER BY</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Task 2: Medium -->
+    <div class="task-card task-medium">
+        <div class="difficulty-label">⚠️ Medium</div>
+        <h3>Task 2: Query Debugging</h3>
+        <p>The AI receives broken SQL queries with bugs and must fix them to produce correct results. It also gets the expected output to compare against.</p>
+        
+        <ul class="challenge-list">
+            <li>
+                <span class="challenge-num">1</span>
+                <div>
+                    <strong>Wrong JOIN type</strong> — LEFT JOIN should be INNER JOIN, causing NULL rows<br>
+                    <span style="color: var(--text-muted); font-size: 13px;">Bug type: Logic error</span>
+                </div>
+            </li>
+            <li>
+                <span class="challenge-num">2</span>
+                <div>
+                    <strong>Incorrect GROUP BY</strong> — Missing column in GROUP BY clause, wrong aggregate<br>
+                    <span style="color: var(--text-muted); font-size: 13px;">Bug type: Syntax + logic error</span>
+                </div>
+            </li>
+            <li>
+                <span class="challenge-num">3</span>
+                <div>
+                    <strong>Subquery returns multiple rows</strong> — Correlated subquery used with = instead of IN<br>
+                    <span style="color: var(--text-muted); font-size: 13px;">Bug type: Runtime error</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Task 3: Hard -->
+    <div class="task-card task-hard">
+        <div class="difficulty-label">🔴 Hard</div>
+        <h3>Task 3: Data Analysis</h3>
+        <p>Complex analytical questions requiring window functions, CTEs, and multi-step reasoning. These are the kinds of queries senior data engineers write.</p>
+        
+        <ul class="challenge-list">
+            <li>
+                <span class="challenge-num">1</span>
+                <div>
+                    <strong>"Top 3 departments by average employee tenure (in years)"</strong><br>
+                    <span style="color: var(--text-muted); font-size: 13px;">Skills: Date arithmetic, ranking, aggregation</span>
+                </div>
+            </li>
+            <li>
+                <span class="challenge-num">2</span>
+                <div>
+                    <strong>"Month-over-month revenue growth rate for 2024-2025"</strong><br>
+                    <span style="color: var(--text-muted); font-size: 13px;">Skills: Window functions (LAG), date grouping, percentage calc</span>
+                </div>
+            </li>
+            <li>
+                <span class="challenge-num">3</span>
+                <div>
+                    <strong>"Employees earning above dept. average but below company median"</strong><br>
+                    <span style="color: var(--text-muted); font-size: 13px;">Skills: CTEs, subqueries, statistical functions</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</section>
+
+<!-- PAGE 4: SCORING SYSTEM -->
+<section class="page-break">
+    <h2><span class="emoji">📊</span> How Scoring Works</h2>
+    <p class="section-subtitle">Partial credit system — not just right or wrong</p>
+
+    <p>Instead of binary pass/fail, we give <strong>partial credit</strong> based on how close the AI's answer is to the correct one. This gives the AI meaningful learning signals even when it's not perfect.</p>
+
+    <h3>Score Scale</h3>
+    <div class="reward-scale">
+        <div class="reward-segment" style="background: #ef4444; flex: 15;">0.0<br><small>Error</small></div>
+        <div class="reward-segment" style="background: #f97316; flex: 15;">0.15<br><small>Wrong cols</small></div>
+        <div class="reward-segment" style="background: #eab308; flex: 15;">0.30<br><small>Right cols</small></div>
+        <div class="reward-segment" style="background: #84cc16; flex: 20;">0.50<br><small>50%+ match</small></div>
+        <div class="reward-segment" style="background: #22c55e; flex: 25;">0.75<br><small>80%+ match</small></div>
+        <div class="reward-segment" style="background: #10b981; flex: 10;">1.0<br><small>Perfect</small></div>
+    </div>
+
+    <table>
+        <tr>
+            <th>Score</th>
+            <th>What It Means</th>
+            <th>Example</th>
+        </tr>
+        <tr>
+            <td><strong>0.0</strong></td>
+            <td>Query fails to run or is completely wrong</td>
+            <td>Syntax error, wrong table name</td>
+        </tr>
+        <tr>
+            <td><strong>0.15</strong></td>
+            <td>Query runs but returns wrong columns</td>
+            <td>Asked for name & salary, got name & email</td>
+        </tr>
+        <tr>
+            <td><strong>0.30</strong></td>
+            <td>Correct columns but wrong data</td>
+            <td>Right column names, but filter is wrong</td>
+        </tr>
+        <tr>
+            <td><strong>0.50</strong></td>
+            <td>Partially correct — 50%+ rows match</td>
+            <td>Got some results right, missed others</td>
+        </tr>
+        <tr>
+            <td><strong>0.75</strong></td>
+            <td>Mostly correct — 80%+ rows match</td>
+            <td>Almost perfect, minor ordering issue</td>
+        </tr>
+        <tr>
+            <td><strong>1.0</strong></td>
+            <td>Perfect match!</td>
+            <td>All rows, columns, and order are correct</td>
+        </tr>
+    </table>
+
+    <div class="card card-warning">
+        <p style="margin:0;"><strong>🧠 Why partial credit matters:</strong> In reinforcement learning, the AI needs gradient signals to improve. If we only said "right or wrong," the AI would struggle to learn. Partial credit tells the AI "you're getting warmer" — which is crucial for efficient learning.</p>
+    </div>
+
+    <h3>Final Score Calculation</h3>
+    <div class="card">
+        <p style="margin:0;">For each task:</p>
+        <div class="code-block">
+            <span class="comment"># Each task has 3 challenges, each worth 0.0 to 1.0</span><br>
+            <span class="keyword">total_reward</span> = challenge_1_score + challenge_2_score + challenge_3_score<br>
+            <span class="keyword">max_possible</span> = <span class="number">3.0</span><br>
+            <span class="keyword">final_score</span> = total_reward / max_possible &nbsp;&nbsp;<span class="comment"># Clamped to [0.0, 1.0]</span>
+        </div>
+    </div>
+</section>
+
+<!-- PAGE 5: ARCHITECTURE -->
+<section class="page-break">
+    <h2><span class="emoji">🏗️</span> System Architecture</h2>
+    <p class="section-subtitle">How all the pieces fit together</p>
+
+    <div class="arch-diagram">
+        <div class="arch-label">Client Side (Your Computer)</div>
+        <div class="arch-row">
+            <div class="arch-box primary">
+                <div class="arch-box-title">inference.py</div>
+                <div class="arch-box-sub">Main script that runs the agent</div>
+            </div>
+            <div class="arch-box">
+                <div class="arch-box-title">OpenAI Client</div>
+                <div class="arch-box-sub">Calls GPT/LLM for SQL generation</div>
+            </div>
+            <div class="arch-box primary">
+                <div class="arch-box-title">SqlOpsEnv Client</div>
+                <div class="arch-box-sub">Connects to environment</div>
+            </div>
+        </div>
+        
+        <div class="arch-connector">⬇️ WebSocket Connection ⬇️</div>
+        
+        <div class="arch-label">Docker Container (Environment Server)</div>
+        <div class="arch-row">
+            <div class="arch-box accent">
+                <div class="arch-box-title">FastAPI Server</div>
+                <div class="arch-box-sub">HTTP + WebSocket endpoints</div>
+            </div>
+        </div>
+        <div class="arch-row">
+            <div class="arch-box success">
+                <div class="arch-box-title">SqlOpsEnvironment</div>
+                <div class="arch-box-sub">Core environment logic</div>
+            </div>
+        </div>
+        <div class="arch-row">
+            <div class="arch-box">
+                <div class="arch-box-title">SQLite DB</div>
+                <div class="arch-box-sub">TechCorp data</div>
+            </div>
+            <div class="arch-box">
+                <div class="arch-box-title">Task Registry</div>
+                <div class="arch-box-sub">9 challenges</div>
+            </div>
+            <div class="arch-box">
+                <div class="arch-box-title">Grader Engine</div>
+                <div class="arch-box-sub">Partial credit scoring</div>
+            </div>
+        </div>
+    </div>
+
+    <h3>Project Files</h3>
+    <div class="file-tree">
+<span class="folder">sqlops_env/</span><br>
+├── <span class="file">__init__.py</span> <span class="desc">........... Exports client + types</span><br>
+├── <span class="file">client.py</span> <span class="desc">............. SqlOpsEnv client class</span><br>
+├── <span class="file">openenv.yaml</span> <span class="desc">.......... OpenEnv manifest</span><br>
+├── <span class="file">pyproject.toml</span> <span class="desc">........ Dependencies</span><br>
+├── <span class="file">inference.py</span> <span class="desc">.......... Baseline agent script</span><br>
+├── <span class="file">README.md</span> <span class="desc">............. Documentation</span><br>
+├── <span class="folder">server/</span><br>
+│   ├── <span class="file">app.py</span> <span class="desc">............ FastAPI application</span><br>
+│   ├── <span class="file">sql_environment.py</span> <span class="desc">. Core environment logic</span><br>
+│   ├── <span class="file">database.py</span> <span class="desc">....... Schema + seed data</span><br>
+│   ├── <span class="file">tasks.py</span> <span class="desc">.......... Challenge definitions</span><br>
+│   ├── <span class="file">grader.py</span> <span class="desc">......... SQL result comparison</span><br>
+│   ├── <span class="file">Dockerfile</span> <span class="desc">........ Container definition</span><br>
+│   └── <span class="file">requirements.txt</span> <span class="desc">.. Server dependencies</span><br>
+    </div>
+</section>
+
+<!-- PAGE 6: MCP TOOLS -->
+<section class="page-break">
+    <h2><span class="emoji">🔧</span> The AI's Tools</h2>
+    <p class="section-subtitle">5 MCP tools the AI agent can use to interact with the environment</p>
+
+    <p>The AI doesn't just send random messages. It has specific <strong>tools</strong> it can call, just like a human developer using a database client:</p>
+
+    <div class="card" style="border-left: 4px solid #6366f1;">
+        <h4 style="margin: 0 0 4px; color: var(--primary);">🔍 get_schema()</h4>
+        <p style="margin: 0; font-size: 13px;">Returns the full database schema — all CREATE TABLE statements. The AI reads this to understand what tables and columns exist.</p>
+    </div>
+
+    <div class="card" style="border-left: 4px solid #8b5cf6;">
+        <h4 style="margin: 0 0 4px; color: #7c3aed;">📋 get_challenge()</h4>
+        <p style="margin: 0; font-size: 13px;">Returns the current challenge — the question to answer, any context (like broken SQL for debugging tasks), and what format the answer should be in.</p>
+    </div>
+
+    <div class="card" style="border-left: 4px solid #06b6d4;">
+        <h4 style="margin: 0 0 4px; color: #0891b2;">▶️ execute_sql(query)</h4>
+        <p style="margin: 0; font-size: 13px;">Runs a SQL query and returns results — for exploration only, no grading. The AI can use this to test ideas before submitting.</p>
+    </div>
+
+    <div class="card" style="border-left: 4px solid #10b981;">
+        <h4 style="margin: 0 0 4px; color: #059669;">✅ submit_answer(query)</h4>
+        <p style="margin: 0; font-size: 13px;">Submits the AI's final SQL answer. The grader runs it, compares results to the expected answer, and returns a score (0.0–1.0).</p>
+    </div>
+
+    <div class="card" style="border-left: 4px solid #f59e0b;">
+        <h4 style="margin: 0 0 4px; color: #d97706;">📈 get_progress()</h4>
+        <p style="margin: 0; font-size: 13px;">Shows how far along the AI is — challenges completed, total reward earned, challenges remaining.</p>
+    </div>
+
+    <h3>Example Interaction (Step by Step)</h3>
+    <div class="code-block">
+<span class="comment"># 1. Environment starts up</span><br>
+result = <span class="keyword">await</span> env.<span class="function">reset</span>()  <span class="comment"># → "Ready! Task: data_retrieval"</span><br>
+<br>
+<span class="comment"># 2. AI reads the database structure</span><br>
+schema = <span class="keyword">await</span> env.<span class="function">call_tool</span>(<span class="string">"get_schema"</span>)<br>
+<span class="comment"># → CREATE TABLE employees (...), CREATE TABLE departments (...)</span><br>
+<br>
+<span class="comment"># 3. AI reads the first question</span><br>
+challenge = <span class="keyword">await</span> env.<span class="function">call_tool</span>(<span class="string">"get_challenge"</span>)<br>
+<span class="comment"># → "How many active employees are in Engineering?"</span><br>
+<br>
+<span class="comment"># 4. AI tests a query (optional)</span><br>
+test = <span class="keyword">await</span> env.<span class="function">call_tool</span>(<span class="string">"execute_sql"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;query=<span class="string">"SELECT * FROM departments LIMIT 3"</span>)<br>
+<br>
+<span class="comment"># 5. AI submits its answer</span><br>
+result = <span class="keyword">await</span> env.<span class="function">call_tool</span>(<span class="string">"submit_answer"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;query=<span class="string">"SELECT COUNT(*) FROM employees e JOIN departments d ON e.department_id = d.id WHERE d.name = 'Engineering' AND e.is_active = 1"</span>)<br>
+<span class="comment"># → reward: 1.0 ✓ Perfect!</span>
+    </div>
+</section>
+
+<!-- PAGE 7: INFERENCE SCRIPT -->
+<section class="page-break">
+    <h2><span class="emoji">🤖</span> The Inference Script</h2>
+    <p class="section-subtitle">How the AI agent actually runs — uses LLM to generate SQL</p>
+
+    <p>The <code>inference.py</code> script is the "brain" that connects an LLM (like GPT-4) to our environment. Here's the flow:</p>
+
+    <div class="flow" style="gap: 0px;">
+        <div class="flow-step" style="background: #eef2ff;">
+            <div class="step-num" style="background: #6366f1;">1</div>
+            <div class="step-title">Start</div>
+            <div class="step-desc">Connect to env<br>& LLM API</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step" style="background: #f0fdf4;">
+            <div class="step-num" style="background: #10b981;">2</div>
+            <div class="step-title">Reset</div>
+            <div class="step-desc">Load task &<br>get schema</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step" style="background: #fffbeb;">
+            <div class="step-num" style="background: #f59e0b;">3</div>
+            <div class="step-title">Loop</div>
+            <div class="step-desc">Get challenge →<br>Ask LLM → Submit</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step" style="background: #fef2f2;">
+            <div class="step-num" style="background: #ef4444;">4</div>
+            <div class="step-title">End</div>
+            <div class="step-desc">Log final<br>scores</div>
+        </div>
+    </div>
+
+    <h3>Required Environment Variables</h3>
+    <table>
+        <tr>
+            <th>Variable</th>
+            <th>What It Is</th>
+            <th>Example</th>
+        </tr>
+        <tr>
+            <td><code>API_BASE_URL</code></td>
+            <td>Where the LLM lives</td>
+            <td>https://api.openai.com/v1</td>
+        </tr>
+        <tr>
+            <td><code>MODEL_NAME</code></td>
+            <td>Which AI model to use</td>
+            <td>gpt-4o-mini</td>
+        </tr>
+        <tr>
+            <td><code>HF_TOKEN</code></td>
+            <td>Your API key</td>
+            <td>hf_xxxxxxxxxxxx</td>
+        </tr>
+    </table>
+
+    <h3>Log Format (required by hackathon)</h3>
+    <div class="code-block">
+<span class="comment"># At the beginning:</span><br>
+<span class="string">[START]</span> task=data_retrieval env=sqlops_env model=gpt-4o-mini<br>
+<br>
+<span class="comment"># After each step:</span><br>
+<span class="string">[STEP]</span> step=<span class="number">1</span> action=<span class="string">"SELECT COUNT(*) FROM..."</span> reward=<span class="number">1.0</span> done=<span class="keyword">false</span> error=<span class="keyword">null</span><br>
+<span class="string">[STEP]</span> step=<span class="number">2</span> action=<span class="string">"SELECT first_name..."</span> reward=<span class="number">0.75</span> done=<span class="keyword">false</span> error=<span class="keyword">null</span><br>
+<span class="string">[STEP]</span> step=<span class="number">3</span> action=<span class="string">"SELECT d.name, SUM..."</span> reward=<span class="number">1.0</span> done=<span class="keyword">true</span> error=<span class="keyword">null</span><br>
+<br>
+<span class="comment"># At the end:</span><br>
+<span class="string">[END]</span> success=<span class="keyword">true</span> steps=<span class="number">3</span> score=<span class="number">0.917</span> rewards=[<span class="number">1.0, 0.75, 1.0</span>]
+    </div>
+</section>
+
+<!-- PAGE 8: DEPLOYMENT -->
+<section class="page-break">
+    <h2><span class="emoji">🚀</span> Deployment Plan</h2>
+    <p class="section-subtitle">Docker container → Hugging Face Spaces → Ready for judging</p>
+
+    <h3>Step 1: Docker Container</h3>
+    <div class="card">
+        <p>We package the entire environment into a <strong>Docker container</strong> — a self-contained box that runs anywhere. It includes:</p>
+        <ul style="margin: 10px 0 0 20px; color: #475569;">
+            <li>Python 3.11 + all dependencies</li>
+            <li>FastAPI server (handles HTTP + WebSocket)</li>
+            <li>SQLite database (created fresh on reset)</li>
+            <li>All task/challenge definitions</li>
+            <li>Grading engine</li>
+        </ul>
+    </div>
+
+    <div class="code-block">
+<span class="comment"># Build the container</span><br>
+docker build -t sqlops-env ./server<br>
+<br>
+<span class="comment"># Run it locally</span><br>
+docker run -p <span class="number">8000</span>:<span class="number">8000</span> sqlops-env<br>
+<br>
+<span class="comment"># Test it's working</span><br>
+curl http://localhost:<span class="number">8000</span>/health  <span class="comment"># → {"status": "ok"}</span>
+    </div>
+
+    <h3>Step 2: Deploy to Hugging Face Spaces</h3>
+    <div class="card">
+        <p>Using the OpenEnv CLI, we push the environment to Hugging Face Spaces — a free hosting platform:</p>
+    </div>
+    <div class="code-block">
+<span class="comment"># One command to deploy</span><br>
+openenv push --repo-id your-username/sqlops-env
+    </div>
+
+    <h3>Step 3: Verify Everything</h3>
+    <ul class="checklist">
+        <li><span class="check-icon">✓</span> HF Space URL returns 200 OK</li>
+        <li><span class="check-icon">✓</span> <code>reset()</code> creates fresh database and returns observation</li>
+        <li><span class="check-icon">✓</span> <code>step()</code> executes SQL and returns graded results</li>
+        <li><span class="check-icon">✓</span> <code>state()</code> returns episode metadata</li>
+        <li><span class="check-icon">✓</span> <code>openenv validate</code> passes all checks</li>
+        <li><span class="check-icon">✓</span> Inference script runs in under 20 minutes</li>
+        <li><span class="check-icon">✓</span> All 3 tasks produce scores in [0.0, 1.0]</li>
+    </ul>
+</section>
+
+<!-- PAGE 9: HACKATHON COMPLIANCE -->
+<section class="page-break">
+    <h2><span class="emoji">✅</span> Hackathon Compliance Checklist</h2>
+    <p class="section-subtitle">Every requirement from the problem statement, mapped to our solution</p>
+
+    <table>
+        <tr>
+            <th style="width: 45%;">Requirement</th>
+            <th style="width: 45%;">How We Meet It</th>
+            <th style="width: 10%;">Status</th>
+        </tr>
+        <tr>
+            <td>Simulates a real-world task (not games)</td>
+            <td>SQL database operations — used by every company daily</td>
+            <td style="color: var(--success); font-weight: 700;">✅</td>
+        </tr>
+        <tr>
+            <td>Full OpenEnv spec: typed models, step/reset/state</td>
+            <td>MCPEnvironment with typed MCP tools, all 3 endpoints</td>
+            <td style="color: var(--success); font-weight: 700;">✅</td>
+        </tr>
+        <tr>
+            <td>openenv.yaml manifest</td>
+            <td>Standard manifest with spec_version, name, runtime, port</td>
+            <td style="color: var(--success); font-weight: 700;">✅</td>
+        </tr>
+        <tr>
+            <td>Minimum 3 tasks with graders (easy→medium→hard)</td>
+            <td>data_retrieval (easy) + query_debugging (medium) + data_analysis (hard)</td>
+            <td style="color: var(--success); font-weight: 700;">✅</td>
+        </tr>
+        <tr>
+            <td>Scores/reward in 0.0–1.0 range</td>
+            <td>6-level partial credit scoring, clamped to [0, 1]</td>
+            <td style="color: var(--success); font-weight: 700;">✅</td>
+        </tr>
+        <tr>
+            <td>Meaningful reward with partial progress</td>
+            <td>Column match, row overlap, data accuracy → gradient signals</td>
+            <td style="color: var(--success); font-weight: 700;">✅</td>
+        </tr>
+        <tr>
+            <td>Baseline inference.py with reproducible scores</td>
+            <td>Full inference script using OpenAI client + structured logging</td>
+            <td style="color: var(--success); font-weight: 700;">✅</td>
+        </tr>
+        <tr>
+            <td>Deploy to HF Spaces + Dockerfile</td>
+            <td>Docker container + openenv push deployment</td>
+            <td style="color: var(--success); font-weight: 700;">✅</td>
+        </tr>
+        <tr>
+            <td>README with full documentation</td>
+            <td>Environment description, action/obs spaces, setup instructions</td>
+            <td style="color: var(--success); font-weight: 700;">✅</td>
+        </tr>
+        <tr>
+            <td>OpenAI Client for all LLM calls</td>
+            <td>Uses openai.OpenAI with API_BASE_URL, MODEL_NAME, HF_TOKEN</td>
+            <td style="color: var(--success); font-weight: 700;">✅</td>
+        </tr>
+        <tr>
+            <td>[START]/[STEP]/[END] log format</td>
+            <td>Exact format compliance in inference.py</td>
+            <td style="color: var(--success); font-weight: 700;">✅</td>
+        </tr>
+        <tr>
+            <td>Runtime < 20 min on vcpu=2, 8GB</td>
+            <td>SQLite in-memory, 9 challenges, ~2 min total expected</td>
+            <td style="color: var(--success); font-weight: 700;">✅</td>
+        </tr>
+    </table>
+</section>
+
+<!-- PAGE 10: SUMMARY -->
+<section class="page-break" style="text-align: center;">
+    <h2><span class="emoji">🏆</span> Why This Wins</h2>
+    <div class="divider"></div>
+
+    <div class="grid-2" style="text-align: left; max-width: 700px; margin: 30px auto;">
+        <div class="card" style="text-align: center;">
+            <div style="font-size: 40px; margin-bottom: 8px;">🌍</div>
+            <h4>Real-World Impact</h4>
+            <p style="font-size: 13px; color: var(--text-muted);">Not a game or toy — this is what companies actually need. SQL database operations is the foundation of every data-driven business.</p>
+        </div>
+        <div class="card" style="text-align: center;">
+            <div style="font-size: 40px; margin-bottom: 8px;">🧪</div>
+            <h4>Rigorous Grading</h4>
+            <p style="font-size: 13px; color: var(--text-muted);">Our 6-level partial credit system gives rich learning signals. No other submission will have grading this sophisticated.</p>
+        </div>
+        <div class="card" style="text-align: center;">
+            <div style="font-size: 40px; margin-bottom: 8px;">🏗️</div>
+            <h4>Clean Architecture</h4>
+            <p style="font-size: 13px; color: var(--text-muted);">Modular, well-documented, production-ready code. Judges will see this is built by someone who knows what they're doing.</p>
+        </div>
+        <div class="card" style="text-align: center;">
+            <div style="font-size: 40px; margin-bottom: 8px;">📝</div>
+            <h4>Resume Portfolio</h4>
+            <p style="font-size: 13px; color: var(--text-muted);">This project demonstrates AI/ML, databases, API design, Docker, and cloud deployment — all the skills top companies want.</p>
+        </div>
+    </div>
+
+    <div class="card" style="max-width: 600px; margin: 30px auto; background: linear-gradient(135deg, #eef2ff, #e0e7ff); border-color: #c7d2fe; text-align: center; padding: 30px;">
+        <p style="font-size: 18px; font-weight: 700; color: var(--primary-dark); margin-bottom: 8px;">
+            "Train AI to master the world's most-used data language."
+        </p>
+        <p style="font-size: 14px; color: var(--text-muted); margin: 0;">
+            — SQLOps: Database Operations Training Environment
+        </p>
+    </div>
+
+    <p style="color: var(--text-muted); font-size: 12px; margin-top: 40px;">
+        Built with OpenEnv Framework • Meta PyTorch + Hugging Face<br>
+        FastAPI • SQLite • Docker • Python 3.11
+    </p>
+</section>
+
+<!-- Print Banner -->
+<div class="print-banner no-print">
+    <p>📄 To save as PDF: click the button below or press <strong>Ctrl+P</strong></p>
+    <button onclick="window.print()">⬇ Save as PDF</button>
+</div>
+
+</body>
+</html>

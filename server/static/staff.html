@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQLOps Oracle &mdash; Agent Terminal | K. Ajay John Paul</title>
+<link rel="stylesheet" href="/static/css/global.css">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0A0A0A">
+<style>
+body{display:flex;flex-direction:column;min-height:100vh}
+.topbar{display:flex;align-items:center;padding:0 24px;height:48px;background:var(--bg);border-bottom:.5px solid var(--border);flex-shrink:0;position:sticky;top:0;z-index:100}
+.tb-logo{font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:.06em;margin-right:6px}
+.tb-sep{width:.5px;height:18px;background:var(--border);margin:0 10px}
+.tb-sub{font-size:10px;color:var(--text-3);letter-spacing:.04em;margin-right:auto}
+.tb-right{display:flex;align-items:center;gap:8px;font-size:11px}
+.tb-right .uname{font-weight:500}
+.tb-timer{font-family:var(--font-mono);font-size:11px;color:var(--text-3);display:flex;align-items:center;gap:4px}
+.tb-timer .live-dot{width:5px;height:5px}
+.dm-toggle{width:24px;height:14px;border-radius:7px;border:.5px solid var(--border);background:var(--bg-3);cursor:pointer;position:relative}
+.dm-toggle::after{content:'';position:absolute;top:1.5px;left:1.5px;width:9px;height:9px;border-radius:50%;background:var(--text);transition:transform 150ms}
+html.dark .dm-toggle::after{transform:translateX(10px)}
+.btn-out{padding:3px 8px;border:.5px solid var(--border);border-radius:var(--r-full);background:none;font-size:10px;color:var(--text-3);transition:all 150ms}
+.btn-out:hover{border-color:var(--text);color:var(--text)}
+.main{flex:1;overflow-y:auto;padding:0}
+.inner{max-width:800px;margin:0 auto;padding:32px 24px 64px}
+/* ── MISSIONS ── */
+.missions{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px}
+.m-card{border:.5px solid var(--border);border-radius:var(--r-12);padding:20px;text-align:center;cursor:pointer;transition:all 150ms cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden}
+.m-card:hover:not(.locked){border-color:var(--border-strong);transform:translateY(-2px)}
+.m-card.active{border-color:var(--black);box-shadow:0 1px 0 rgba(0,0,0,0.08)}
+.m-card.locked{opacity:.45;cursor:not-allowed}
+.m-card.locked::after{content:'\1F512';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.5rem;opacity:.2}
+.m-diff{margin-bottom:8px}
+.m-title{font-size:12px;font-weight:600;margin:8px 0}
+.m-score{font-family:var(--font-mono);font-size:22px;font-weight:400;margin:8px 0}
+.m-btn{padding:5px 14px;border-radius:var(--r-full);font-size:10px;font-weight:600;letter-spacing:.06em;cursor:pointer;border:.5px solid var(--black);background:var(--black);color:var(--white);transition:opacity 150ms}
+.m-btn:hover{opacity:.8}
+.locked .m-btn{background:transparent;color:var(--text-3);border-color:var(--border);pointer-events:none}
+/* ── TASK PANEL ── */
+.task-panel{border:.5px solid var(--border);border-radius:var(--r-12);overflow:hidden;margin-bottom:24px;background:var(--bg)}
+.tp-header{padding:16px 20px;border-bottom:.5px solid var(--border);display:flex;align-items:center;gap:10px}
+.tp-header h2{font-family:var(--font-display);font-size:15px;font-weight:700;flex:1}
+.att-bar{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-3);font-family:var(--font-mono)}
+.att-track{width:100px;height:3px;background:var(--gray-200);border-radius:2px;overflow:hidden}
+.att-fill{height:100%;background:var(--black);border-radius:2px;transition:width 300ms cubic-bezier(.4,0,.2,1)}
+.colp{border-bottom:.5px solid var(--border)}
+.colp-hdr{padding:10px 20px;cursor:pointer;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:500;color:var(--text-3);user-select:none;transition:color 150ms}
+.colp-hdr:hover{color:var(--text)}
+.colp-arr{transition:transform 150ms;font-size:8px}
+.colp.open .colp-arr{transform:rotate(90deg)}
+.colp-body{display:none;padding:0 20px 14px;font-family:var(--font-mono);font-size:12px;color:var(--text-2);line-height:1.7;white-space:pre-wrap}
+.colp.open .colp-body{display:block}
+/* ── CONSOLE ── */
+.console{padding:16px 20px}
+.console-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px}
+.console textarea{width:100%;min-height:120px;background:var(--bg-2);border:.5px solid var(--border);border-radius:var(--r-8);padding:14px;color:var(--text);font-family:var(--font-mono);font-size:13px;resize:vertical;outline:none;line-height:1.7;tab-size:2;transition:border-color 150ms}
+.console textarea:focus{border-color:var(--black);background:var(--bg)}
+.console-btns{display:flex;gap:8px;margin-top:10px;align-items:center}
+.console-hint{font-size:10px;color:var(--text-4);margin-left:auto;font-family:var(--font-mono)}
+.inline-err{font-size:11px;color:#9b1b1b;margin-top:6px;display:none}
+/* ── RESULTS ── */
+.res-sec{padding:0 20px 20px}
+.sc-disp{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.sc-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3)}
+.sc-track{flex:1;height:2px;background:var(--gray-200);border-radius:1px;overflow:hidden}
+.sc-fill{height:100%;background:var(--black);border-radius:1px;transition:width 800ms cubic-bezier(.4,0,.2,1)}
+.sc-val{font-family:var(--font-mono);font-size:16px;font-weight:500;min-width:40px;text-align:right}
+.fb-text{font-family:var(--font-mono);font-size:11px;color:var(--text-3);padding:10px 12px;background:var(--bg-2);border-radius:var(--r-8);border-left:2px solid var(--border);margin-bottom:12px;min-height:24px}
+.res-wrap{max-height:200px;overflow:auto;border:.5px solid var(--border);border-radius:var(--r-8)}
+/* ── PERSONAL RECORD ── */
+.record{border:.5px solid var(--border);border-radius:var(--r-12);padding:20px;margin-bottom:24px}
+.record-title{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);margin-bottom:12px}
+.rec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center}
+.rec-box{padding:12px;background:var(--bg-2);border-radius:var(--r-8);border:.5px solid var(--border)}
+.rec-task{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:4px}
+.rec-score{font-family:var(--font-mono);font-size:20px;font-weight:400}
+.rec-status{font-size:10px;color:var(--text-3);margin-top:2px}
+.rank-bar{text-align:center;padding:12px;font-family:var(--font-mono);font-size:11px;color:var(--text-3);margin-top:12px;border-top:.5px solid var(--border)}
+/* ── SUCCESS OVERLAY ── */
+#successOv{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);opacity:0;pointer-events:none;transition:opacity 300ms cubic-bezier(.4,0,.2,1)}
+#successOv.active{opacity:1;pointer-events:auto}
+.suc-check{width:60px;height:60px;margin-bottom:16px}
+.suc-check circle{fill:none;stroke:var(--black);stroke-width:2;stroke-dasharray:170;stroke-dashoffset:170;animation:drawCheck .6s ease forwards}
+.suc-check path{fill:none;stroke:var(--black);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:40;stroke-dashoffset:40;animation:drawTick .4s ease .5s forwards}
+@keyframes drawCheck{to{stroke-dashoffset:0}}
+@keyframes drawTick{to{stroke-dashoffset:0}}
+.suc-title{font-family:var(--font-display);font-size:36px;font-weight:700;margin-bottom:4px}
+.suc-sub{font-family:var(--font-mono);font-size:13px;color:var(--text-3);margin-bottom:24px}
+.suc-btn{padding:10px 24px}
+.sq-particle{position:fixed;width:5px;height:5px;background:var(--black);pointer-events:none;z-index:10000}
+/* ── FOOTER ── */
+.app-foot{padding:8px 24px;border-top:.5px solid var(--border);display:flex;justify-content:space-between;font-size:10px;color:var(--text-4);flex-shrink:0}
+@media(max-width:700px){.missions{grid-template-columns:1fr}.rec-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="successOv">
+  <svg class="suc-check" viewBox="0 0 60 60"><circle cx="30" cy="30" r="27"/><path d="M18 30 L26 38 L42 22"/></svg>
+  <div class="suc-title">Perfect Score</div>
+  <div class="suc-sub">1.00 &mdash; Maximum signal received</div>
+  <button class="btn-primary suc-btn" onclick="dismissSuccess()">Continue &rarr;</button>
+</div>
+
+<nav class="topbar">
+  <span class="tb-logo">SQLOps</span>
+  <div class="tb-sep"></div>
+  <span class="tb-sub">Agent Terminal</span>
+  <div class="tb-right">
+    <div class="tb-timer"><div class="live-dot"></div><span id="timer">00:00</span></div>
+    <span class="uname" id="uName">Agent</span>
+    <span class="badge badge-role">Staff</span>
+    <div class="dm-toggle" onclick="toggleDark()"></div>
+    <button class="btn-out" onclick="logout()">Sign out</button>
+  </div>
+</nav>
+
+<div class="main"><div class="inner">
+  <div class="missions" id="mCards"></div>
+
+  <div class="task-panel" id="tPanel">
+    <div class="tp-header">
+      <h2 id="tTitle">Loading...</h2>
+      <div id="tDiff"></div>
+      <div class="att-bar"><span id="attText">0/5</span><div class="att-track"><div class="att-fill" id="attFill" style="width:0"></div></div></div>
+    </div>
+    <div class="colp open" id="briefing">
+      <div class="colp-hdr" onclick="this.parentElement.classList.toggle('open')"><span class="colp-arr">&#9654;</span> Mission Briefing</div>
+      <div class="colp-body" id="briefBody"></div>
+    </div>
+    <div class="colp" id="schemaHint">
+      <div class="colp-hdr" onclick="this.parentElement.classList.toggle('open')"><span class="colp-arr">&#9654;</span> Schema Hint</div>
+      <div class="colp-body" id="schemaBody"></div>
+    </div>
+    <div class="console">
+      <div class="console-label">Query Console</div>
+      <textarea id="qInput" placeholder="-- Write your SQL query here&#10;-- Ctrl+Enter to transmit" spellcheck="false"></textarea>
+      <div class="inline-err" id="inlineErr"></div>
+      <div class="console-btns">
+        <button class="btn-primary" id="txBtn" onclick="transmit()">Transmit Query</button>
+        <button class="btn-ghost" onclick="document.getElementById('qInput').value=''">Clear</button>
+        <span class="console-hint">Ctrl+Enter</span>
+      </div>
+    </div>
+    <div class="res-sec">
+      <div class="sc-disp">
+        <span class="sc-label">Score</span>
+        <div class="sc-track"><div class="sc-fill" id="scFill" style="width:0"></div></div>
+        <div class="sc-val" id="scVal" style="color:var(--text-3)">0.00</div>
+      </div>
+      <div class="fb-text" id="fbText">Submit a query to begin.</div>
+      <div class="res-wrap" id="resWrap" style="display:none"><table class="data-table" id="resTable"></table></div>
+    </div>
+  </div>
+
+  <div class="record">
+    <div class="record-title">Personal Record</div>
+    <div class="rec-grid" id="recGrid"></div>
+    <div class="rank-bar" id="rankBar">Connecting to arena...</div>
+  </div>
+</div></div>
+
+<footer class="app-foot">
+  <div>SQLOps Oracle v1.0.0</div>
+  <div>Designed by K. Ajay John Paul &middot; KL University, Hyderabad</div>
+  <div>OpenEnv Hackathon 2024</div>
+</footer>
+
+<script src="/static/js/4d-engine.js"></script>
+<script>
+let tasks=[],ct=0,scores={},attempts={},wsC,timerStart=null,timerInt=null;
+
+/* ── DARK MODE ── */
+function toggleDark(){document.documentElement.classList.toggle('dark');localStorage.setItem('dm',document.documentElement.classList.contains('dark')?'1':'0')}
+if(localStorage.getItem('dm')==='1')document.documentElement.classList.add('dark');
+
+async function init(){
+  try{const me=await(await fetch('/auth/me')).json();document.getElementById('uName').textContent=me.display_name||me.username}catch(e){}
+  try{const [tr,sr]=await Promise.all([fetch('/tasks'),fetch('/state')]);tasks=await tr.json();const st=await sr.json();
+    scores=st.task_scores||{};attempts=st.task_attempts||{};
+    renderMissions();loadTask(st.current_task_index||0);renderRec();startTimer();
+  }catch(e){document.getElementById('fbText').textContent='Error: '+e.message}
+  connectWS();
+}
+
+function renderMissions(){
+  document.getElementById('mCards').innerHTML=tasks.map((t,i)=>{
+    const s=scores[t.task_id]||0;const locked=i>0&&(scores[tasks[i-1].task_id]||0)<0.5;const active=i===ct;
+    const bc=t.difficulty==='easy'?'badge-easy':t.difficulty==='medium'?'badge-medium':'badge-hard';
+    return `<div class="m-card ${locked?'locked':''} ${active?'active':''}" onclick="${locked?'':'selMission('+i+')'}"><div class="m-diff"><span class="badge ${bc}">${t.difficulty}</span></div><div class="m-title">${t.title}</div><div class="m-score">${s.toFixed(2)}</div><button class="m-btn">${locked?'Locked':'Start'}</button></div>`;
+  }).join('');
+}
+
+function selMission(i){ct=i;renderMissions();loadTask(i);
+  fetch(`/reset?task_index=${i}`,{method:'POST'}).then(r=>r.json()).then(d=>{
+    if(d.observation){scores[d.observation.task_id]=0;attempts[d.observation.task_id]=0}
+    renderRec();startTimer();
+  });
+}
+
+function loadTask(i){
+  const t=tasks[i];if(!t)return;
+  document.getElementById('tTitle').textContent=t.title;
+  const bc=t.difficulty==='easy'?'badge-easy':t.difficulty==='medium'?'badge-medium':'badge-hard';
+  document.getElementById('tDiff').innerHTML=`<span class="badge ${bc}">${t.difficulty}</span>`;
+  const att=attempts[t.task_id]||0;
+  document.getElementById('attText').textContent=`${att}/${t.max_attempts}`;
+  document.getElementById('attFill').style.width=((att/t.max_attempts)*100)+'%';
+  document.getElementById('briefBody').textContent=t.description;
+  document.getElementById('schemaBody').textContent=t.hint||'Tables: '+t.schema_tables.join(', ');
+}
+
+/* ── TIMER ── */
+function startTimer(){timerStart=Date.now();if(timerInt)clearInterval(timerInt);timerInt=setInterval(()=>{const s=Math.floor((Date.now()-timerStart)/1000);const m=Math.floor(s/60);document.getElementById('timer').textContent=`${String(m).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`},1000)}
+
+/* ── TRANSMIT ── */
+async function transmit(){
+  const sql=document.getElementById('qInput').value.trim();
+  const ie=document.getElementById('inlineErr');ie.style.display='none';
+  if(!sql){ie.textContent='Query cannot be empty';ie.style.display='block';return}
+  const up=sql.toUpperCase().trim();
+  if(!up.startsWith('SELECT')&&!up.startsWith('WITH')){ie.textContent='Query must start with SELECT or WITH';ie.style.display='block';return}
+  const btn=document.getElementById('txBtn');btn.textContent='Transmitting...';btn.style.opacity='.6';btn.style.pointerEvents='none';
+  try{const r=await fetch('/step',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql_query:sql,reasoning:'staff_console'})});const d=await r.json();
+    const sc=d.reward||0;const obs=d.observation||{};
+    document.getElementById('scFill').style.width=(sc*100)+'%';
+    document.getElementById('scVal').textContent=sc.toFixed(2);
+    document.getElementById('scVal').style.color=sc>=1?'var(--text)':'var(--text-2)';
+    document.getElementById('fbText').textContent=obs.grader_feedback||'';
+    document.getElementById('fbText').style.borderLeftColor=sc>=1?'var(--black)':'var(--border)';
+
+    // Result table
+    if(obs.query_result){
+      const lines=obs.query_result.split('\n');
+      if(lines.length>=2){
+        const cols=lines[0].split('|').map(s=>s.trim()).filter(Boolean);
+        const rows=lines.slice(2).filter(l=>l.trim()&&!l.startsWith('...')).map(l=>l.split('|').map(s=>s.trim()).filter(Boolean));
+        document.getElementById('resTable').innerHTML='<thead><tr>'+cols.map(c=>`<th>${c}</th>`).join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map(v=>`<td>${v}</td>`).join('')+'</tr>').join('')+'</tbody>';
+        document.getElementById('resWrap').style.display='block';
+      }
+    }else if(obs.error_message){
+      document.getElementById('resTable').innerHTML=`<tr><td style="color:#9b1b1b;font-family:var(--font-mono)">${obs.error_message}</td></tr>`;
+      document.getElementById('resWrap').style.display='block';
+    }
+
+    scores[obs.task_id]=Math.max(scores[obs.task_id]||0,sc);
+    attempts[obs.task_id]=(attempts[obs.task_id]||0)+1;
+    const att=attempts[obs.task_id];const t=tasks[ct];
+    document.getElementById('attText').textContent=`${att}/${t.max_attempts}`;
+    document.getElementById('attFill').style.width=((att/t.max_attempts)*100)+'%';
+
+    if(sc>=1.0){showSuccess();if(timerInt)clearInterval(timerInt)}
+    renderMissions();renderRec();
+  }catch(e){document.getElementById('fbText').textContent='Error: '+e.message}
+  finally{btn.textContent='Transmit Query';btn.style.opacity='';btn.style.pointerEvents=''}
+}
+
+document.getElementById('qInput').addEventListener('keydown',e=>{
+  if(e.ctrlKey&&e.key==='Enter'){e.preventDefault();transmit()}
+  if(e.key==='Tab'){e.preventDefault();const s=e.target,p=s.selectionStart;s.value=s.value.slice(0,p)+'  '+s.value.slice(p);s.selectionStart=s.selectionEnd=p+2}
+});
+
+/* ── SUCCESS OVERLAY ── */
+function showSuccess(){
+  document.getElementById('successOv').classList.add('active');
+  // Particles
+  for(let i=0;i<40;i++){const p=document.createElement('div');p.className='sq-particle';
+    const a=Math.random()*Math.PI*2,d=80+Math.random()*180;
+    const x=innerWidth/2,y=innerHeight/2;
+    p.style.cssText=`left:${x}px;top:${y}px;transition:all ${.5+Math.random()*.6}s cubic-bezier(.4,0,.2,1);opacity:1`;
+    document.body.appendChild(p);
+    requestAnimationFrame(()=>{p.style.left=(x+Math.cos(a)*d)+'px';p.style.top=(y+Math.sin(a)*d)+'px';p.style.opacity='0'});
+    setTimeout(()=>p.remove(),1500);
+  }
+  setTimeout(dismissSuccess,3500);
+}
+function dismissSuccess(){document.getElementById('successOv').classList.remove('active')}
+
+function renderRec(){
+  document.getElementById('recGrid').innerHTML=tasks.map(t=>{
+    const s=scores[t.task_id]||0;const a=attempts[t.task_id]||0;
+    const st=s>=1?'Complete':a>0?'In progress':'\u2014';
+    return `<div class="rec-box"><div class="rec-task">${t.difficulty}</div><div class="rec-score">${s.toFixed(2)}</div><div class="rec-status">${st}</div></div>`;
+  }).join('');
+}
+
+/* ── WS ── */
+function connectWS(){const p=location.protocol==='https:'?'wss':'ws';wsC=new WebSocket(`${p}://${location.host}/ws/arena`);
+  wsC.onmessage=e=>{try{const d=JSON.parse(e.data);if(d.event==='step'){document.getElementById('rankBar').textContent=`Live Arena \u2014 Latest: ${d.task} scored ${(d.reward||0).toFixed(2)}`}}catch(x){}};
+  wsC.onclose=()=>setTimeout(connectWS,3000)}
+
+function logout(){fetch('/auth/logout',{method:'POST'}).then(()=>location.href='/login')}
+init();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
+</script>
+</body>
+</html>

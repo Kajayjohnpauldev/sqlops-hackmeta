@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQLOps Oracle &mdash; Sign In</title>
+<link rel="stylesheet" href="/static/css/global.css">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0A0A0A">
+<meta name="description" content="SQLOps Oracle — AI SQL Training Environment by K. Ajay John Paul">
+<style>
+html,body{height:100%}
+body{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;overflow:hidden}
+.left{position:relative;background:var(--black);overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:48px}
+#pCanvas,#lCanvas{position:absolute;inset:0;width:100%;height:100%}
+#pCanvas{opacity:.35}#lCanvas{opacity:.15}
+.lz{position:relative;z-index:2}
+.left-logo{font-family:var(--font-display);font-size:13px;font-weight:700;letter-spacing:.08em;color:#fff;opacity:.85}
+.left-tag h1{font-family:var(--font-display);font-size:clamp(28px,3.5vw,44px);font-weight:700;line-height:1.1;color:#fff;opacity:.88;margin-bottom:16px}
+.left-tag h1 em{font-style:italic;font-weight:400;opacity:.65}
+.left-tag p{font-size:13px;color:rgba(255,255,255,.38);line-height:1.7;max-width:320px}
+.left-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-top:40px}
+.ls{color:#fff}
+.ls-v{font-family:var(--font-mono);font-size:22px;font-weight:300;opacity:.85}
+.ls-l{font-size:9px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;opacity:.3;margin-top:4px}
+.left-foot{position:relative;z-index:2;font-size:10px;color:rgba(255,255,255,.2);letter-spacing:.04em;margin-top:32px}
+.right{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px;background:var(--bg);position:relative}
+.rinr{width:100%;max-width:360px}
+.fe{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px}
+.ft{font-family:var(--font-display);font-size:28px;font-weight:700;margin-bottom:4px}
+.fs{font-size:13px;color:var(--text-3);margin-bottom:40px}
+.rsw{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:28px;padding:4px;background:var(--bg-3);border-radius:10px}
+.ro{padding:10px;border-radius:7px;border:none;background:none;font-family:var(--font-ui);font-size:12px;font-weight:500;cursor:pointer;transition:all 150ms cubic-bezier(.4,0,.2,1);text-align:center;color:var(--text-3)}
+.ro.act{background:var(--bg);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.ro .rn{font-weight:600;font-size:12px}.ro .rc{font-family:var(--font-mono);font-size:10px;color:var(--text-3);margin-top:2px}
+.fld{margin-bottom:16px}
+.fld label{display:block;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:6px}
+.fld input{width:100%;padding:11px 14px;background:var(--bg-2);color:var(--text);border:.5px solid var(--border);border-radius:8px;font-family:var(--font-mono);font-size:14px;outline:none;transition:border-color 150ms cubic-bezier(.4,0,.2,1)}
+.fld input:focus{border-color:var(--black);background:var(--bg)}
+.lbtn{width:100%;padding:13px;background:var(--black);color:var(--white);border:none;border-radius:8px;font-family:var(--font-ui);font-size:13px;font-weight:600;letter-spacing:.06em;cursor:pointer;transition:opacity 150ms;margin-top:8px;position:relative;overflow:hidden}
+.lbtn:hover{opacity:.85}
+.lbtn.ld{pointer-events:none}
+.lbtn.ld::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 25%,rgba(255,255,255,.1) 50%,transparent 75%);animation:shimmer 1.2s linear infinite}
+@keyframes shimmer{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+.emsg{font-size:12px;color:#9b1b1b;background:#fdf0f0;border:.5px solid #f5c6c6;border-radius:6px;padding:10px 12px;margin-top:12px;display:none}
+.ffoot{margin-top:40px;font-size:11px;color:var(--text-4);text-align:center}
+.ffoot .dm{font-family:var(--font-mono);font-size:11px;line-height:2}
+.fcube{position:absolute;top:32px;right:32px;opacity:.25}
+@media(max-width:768px){body{grid-template-columns:1fr}.left{display:none}}
+</style>
+</head>
+<body>
+<div class="left">
+  <canvas id="pCanvas"></canvas>
+  <canvas id="lCanvas"></canvas>
+  <div class="lz"><div class="left-logo">SQLOPS ORACLE</div></div>
+  <div class="lz" style="margin-top:auto">
+    <div class="left-tag">
+      <h1>Database<br><em>Intelligence</em><br>System</h1>
+      <p>A real-world SQL training environment where AI agents learn to write, debug, and analyze enterprise database queries.</p>
+      <div class="left-stats">
+        <div class="ls"><div class="ls-v">3</div><div class="ls-l">Tasks</div></div>
+        <div class="ls"><div class="ls-v">343+</div><div class="ls-l">DB Rows</div></div>
+        <div class="ls"><div class="ls-v">0&rarr;1.0</div><div class="ls-l">Reward</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="left-foot">Designed by K. Ajay John Paul &middot; KL University, Hyderabad &middot; B.Tech CSE</div>
+</div>
+
+<div class="right">
+  <div class="fcube">
+    <div class="cube-scene" style="width:48px;height:48px">
+      <div class="cube3" style="width:48px;height:48px">
+        <div class="cf" style="width:48px;height:48px;transform:translateZ(24px)"></div>
+        <div class="cb" style="width:48px;height:48px;transform:translateZ(-24px) rotateY(180deg)"></div>
+        <div class="cl" style="width:48px;height:48px;transform:rotateY(-90deg) translateZ(24px)"></div>
+        <div class="cr" style="width:48px;height:48px;transform:rotateY(90deg) translateZ(24px)"></div>
+        <div class="ct" style="width:48px;height:48px;transform:rotateX(90deg) translateZ(24px)"></div>
+        <div class="cbt" style="width:48px;height:48px;transform:rotateX(-90deg) translateZ(24px)"></div>
+      </div>
+    </div>
+  </div>
+  <div class="rinr">
+    <div class="fe">SQLOps Oracle v1.0</div>
+    <div class="ft">Sign In</div>
+    <div class="fs">Access the database intelligence platform</div>
+    <div class="rsw">
+      <button class="ro act" id="rb" onclick="selRole('boss')"><div class="rn">Boss</div><div class="rc">Full access</div></button>
+      <button class="ro" id="rs" onclick="selRole('staff')"><div class="rn">Staff</div><div class="rc">Operator</div></button>
+    </div>
+    <div class="fld"><label>Username</label><input type="text" id="un" placeholder="Enter username" autocomplete="username"></div>
+    <div class="fld"><label>Password</label><input type="password" id="pw" placeholder="Enter password" autocomplete="current-password"></div>
+    <button class="lbtn" id="lb" onclick="doLogin()">Authenticate &rarr;</button>
+    <div class="emsg" id="em"></div>
+    <div class="ffoot">
+      <div style="margin-bottom:8px;color:var(--text-3)">Demo credentials</div>
+      <div class="dm">boss / sqlops2024 &nbsp;&nbsp; staff1 / staff123</div>
+      <div style="margin-top:24px">Designed by <strong>K. Ajay John Paul</strong><br>KL University, Hyderabad &middot; OpenEnv Hackathon 2024</div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/4d-engine.js"></script>
+<script>
+const RC={boss:{u:'boss',p:'sqlops2024'},staff:{u:'staff1',p:'staff123'}};
+let sr='boss';
+function selRole(r){sr=r;document.getElementById('rb').classList.toggle('act',r==='boss');document.getElementById('rs').classList.toggle('act',r==='staff');document.getElementById('un').value=RC[r].u;document.getElementById('pw').value=RC[r].p}
+async function doLogin(){const b=document.getElementById('lb'),e=document.getElementById('em'),u=document.getElementById('un').value.trim(),p=document.getElementById('pw').value;b.textContent='Authenticating...';b.classList.add('ld');e.style.display='none';try{const fd=new FormData;fd.append('username',u);fd.append('password',p);const r=await fetch('/auth/login',{method:'POST',body:fd});const d=await r.json();if(r.ok&&d.redirect){b.textContent='Access Granted';setTimeout(()=>location.href=d.redirect,400)}else throw new Error(d.error||'Invalid credentials')}catch(x){b.textContent='Authenticate \u2192';b.classList.remove('ld');e.style.display='block';e.textContent=x.message}}
+document.getElementById('pw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+selRole('boss');
+const lp=document.querySelector('.left');
+if(lp){['pCanvas','lCanvas'].forEach(id=>{const c=document.getElementById(id);c.style.width=lp.offsetWidth+'px';c.style.height=lp.offsetHeight+'px'});sqlEngine.initParticleField('pCanvas',{count:60,speed:.2,dark:true});sqlEngine.initScoreLandscape('lCanvas',[.15,.30,.75,1,.00,.20,.40,.60,.80,1,.00,.00,.25,.40,.55,.70,.85,.85,1])}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
+</script>
+</body>
+</html>

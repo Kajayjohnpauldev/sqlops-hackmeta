@@ -1,0 +1,60 @@
+name: sqlops
+version: "1.0.0"
+description: >
+  SQLOps is a real-world SQL database operations training environment
+  where AI agents write, debug, and analyze SQL queries against a
+  simulated company operations database. Features include a Boss/Staff
+  role-based dashboard, live WebSocket Agent Arena, interactive SQL Lab,
+  and Progressive Web App support.
+author: "K. Ajay John Paul"
+contact: "ajay@kluniversity.in"
+institution: "KL University, Hyderabad — B.Tech CSE"
+license: MIT
+
+tasks:
+  - id: sales_summary
+    description: "Write SQL to compute total sales per region, sorted highest to lowest"
+    difficulty: easy
+    max_attempts: 5
+    reward_range: [0.0, 1.0]
+  - id: debug_query
+    description: "Fix a broken LEFT JOIN query so all 8 departments appear"
+    difficulty: medium
+    max_attempts: 7
+    reward_range: [0.0, 1.0]
+  - id: performance_analytics
+    description: "CTE + window functions for department performance ranking"
+    difficulty: hard
+    max_attempts: 10
+    reward_range: [0.0, 1.0]
+
+action_space:
+  type: object
+  properties:
+    sql_query:  {type: string, description: "Valid SQL SELECT statement"}
+    reasoning:  {type: string, description: "Optional reasoning trace"}
+  required: [sql_query]
+
+observation_space:
+  type: object
+  properties:
+    task_id:          {type: string}
+    task_description: {type: string}
+    schema_hint:      {type: string}
+    query_result:     {type: string, nullable: true}
+    error_message:    {type: string, nullable: true}
+    expected_columns: {type: array, items: {type: string}}
+    attempt_number:   {type: integer}
+    max_attempts:     {type: integer}
+    partial_score:    {type: number}
+    grader_feedback:  {type: string}
+    difficulty:       {type: string}
+
+reward_range: [0.0, 1.0]
+partial_rewards: true
+deterministic: true
+
+docker:
+  image: sqlops-env
+  port: 7860
+  healthcheck: /health
