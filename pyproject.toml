@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "sqlops-env"
+version = "1.0.0"
+description = "SQLOps Oracle — AI SQL Training Environment for OpenEnv"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+authors = [
+    {name = "K. Ajay John Paul", email = "kajayjohnpaul.business@gmail.com"}
+]
+keywords = ["openenv", "sql", "ai-training", "reinforcement-learning"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "fastapi>=0.100.0",
+    "uvicorn[standard]>=0.22.0",
+    "pydantic>=2.0.0",
+    "python-multipart>=0.0.6",
+    "websockets>=11.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Kajayjohnpauldev/sqlops-hackmeta"
+Repository = "https://github.com/Kajayjohnpauldev/sqlops-hackmeta"
+"Hugging Face" = "https://huggingface.co/spaces/JOHNMAMBA990/sqlops-hackmeta"
+
+[tool.setuptools.packages.find]
+include = ["server*", "models*"]
+
+[tool.openenv]
+name = "sqlops"
+version = "1.0.0"
+description = "AI SQL Training Environment — Learn to write, debug, and analyze SQL"
+author = "K. Ajay John Paul"
+institution = "KL University, Hyderabad"
+app_port = 7860
+tasks = ["sales_summary", "debug_query", "performance_analytics"]
