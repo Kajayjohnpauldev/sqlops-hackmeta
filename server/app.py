@@ -379,3 +379,22 @@ async def service_worker():
     if fp.exists():
         return FileResponse(str(fp), media_type="application/javascript")
     return Response("// no service worker", media_type="application/javascript")
+
+
+# ═══════════════════════════════════════════════════════════════════
+# ENTRY POINT — required by OpenEnv for multi-mode deployment
+# ═══════════════════════════════════════════════════════════════════
+
+def main():
+    """Start the SQLOps Oracle server."""
+    import uvicorn
+    uvicorn.run(
+        "server.app:app",
+        host="0.0.0.0",
+        port=7860,
+        workers=1,
+    )
+
+
+if __name__ == "__main__":
+    main()
