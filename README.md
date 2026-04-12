@@ -1,3 +1,15 @@
+---
+title: SQLOps Oracle
+emoji: 🗄️
+colorFrom: gray
+colorTo: gray
+sdk: docker
+app_port: 7860
+pinned: true
+license: mit
+short_description: AI SQL Training Environment — OpenEnv Hackathon 2024
+---
+
 # SQLOps Oracle — AI SQL Training Environment
 
 > Designed by **K. Ajay John Paul** | B.Tech CSE | KL University, Hyderabad
