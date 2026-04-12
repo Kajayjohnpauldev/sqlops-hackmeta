@@ -12,28 +12,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
-# Create icons directory
+# Generate SVG icons at build time
 RUN mkdir -p server/static/icons && \
-    python -c "
-import os
-svg_template = '''<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 {s} {s}\">
-  <rect width=\"{s}\" height=\"{s}\" rx=\"{r}\" fill=\"#030508\"/>
-  <rect x=\"{m}\" y=\"{m}\" width=\"{i}\" height=\"{i}\" rx=\"{ir}\" fill=\"none\" stroke=\"#0D2244\" stroke-width=\"{sw}\"/>
-  <ellipse cx=\"{c}\" cy=\"{t}\" rx=\"{ex}\" ry=\"{ey}\" fill=\"none\" stroke=\"#00D4FF\" stroke-width=\"{sw}\"/>
-  <line x1=\"{l}\" y1=\"{t}\" x2=\"{l}\" y2=\"{b}\" stroke=\"#00D4FF\" stroke-width=\"{sw}\"/>
-  <line x1=\"{rr}\" y1=\"{t}\" x2=\"{rr}\" y2=\"{b}\" stroke=\"#00D4FF\" stroke-width=\"{sw}\"/>
-  <ellipse cx=\"{c}\" cy=\"{b}\" rx=\"{ex}\" ry=\"{ey}\" fill=\"none\" stroke=\"#00D4FF\" stroke-width=\"{sw}\"/>
-  <text x=\"{c}\" y=\"{tt}\" font-family=\"monospace\" font-weight=\"bold\" font-size=\"{fs}\" fill=\"#00FF9D\" text-anchor=\"middle\">SQL</text>
-</svg>'''
-for size in [192, 512]:
-    s=size; c=s//2; m=s//10; i=s-2*m; r=s//8; ir=s//12
-    t=int(s*0.3); b=int(s*0.6); ex=s//4; ey=s//8; sw=max(s//40,2)
-    l=c-ex; rr=c+ex; tt=int(s*0.82); fs=s//6
-    svg = svg_template.format(s=s,c=c,m=m,i=i,r=r,ir=ir,t=t,b=b,ex=ex,ey=ey,sw=sw,l=l,rr=rr,tt=tt,fs=fs)
-    with open(f'server/static/icons/icon-{size}.svg', 'w') as f:
-        f.write(svg)
-    print(f'Created icon-{size}.svg')
-"
+    python -c "s=192;c=s//2;m=s//10;svg=f'<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 {s} {s}\"><rect width=\"{s}\" height=\"{s}\" rx=\"{s//8}\" fill=\"#0A0A0A\"/><text x=\"{c}\" y=\"{int(s*0.6)}\" font-family=\"monospace\" font-weight=\"bold\" font-size=\"{s//4}\" fill=\"#fff\" text-anchor=\"middle\">SQL</text></svg>';open('server/static/icons/icon-192.svg','w').write(svg)" && \
+    python -c "s=512;c=s//2;m=s//10;svg=f'<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 {s} {s}\"><rect width=\"{s}\" height=\"{s}\" rx=\"{s//8}\" fill=\"#0A0A0A\"/><text x=\"{c}\" y=\"{int(s*0.6)}\" font-family=\"monospace\" font-weight=\"bold\" font-size=\"{s//4}\" fill=\"#fff\" text-anchor=\"middle\">SQL</text></svg>';open('server/static/icons/icon-512.svg','w').write(svg)"
 
 # Expose port for HF Spaces
 EXPOSE 7860
