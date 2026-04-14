@@ -8,18 +8,31 @@
 Baseline inference script.
 Runs through all 3 tasks using hardcoded reference-quality SQL.
 Follows exact OpenEnv log format: [START], [STEP], [END].
+
+Environment variables:
+  API_BASE_URL  - URL of the running environment (default: http://localhost:7860)
+  MODEL_NAME    - Name of the model/agent (default: baseline-agent)
+  HF_TOKEN      - Hugging Face token (optional, for authenticated endpoints)
 """
 
 import os
 import sys
 import json
 import time
-import requests
+
+try:
+    import requests
+except ImportError:
+    # Fallback: install requests if missing
+    import subprocess
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "requests", "-q"])
+    import requests
 
 # ─── Configuration ──────────────────────────────────────────────────
 
-BASE_URL = os.getenv("API_BASE_URL", "http://localhost:7860")
-TASK_NAME = os.getenv("TASK_NAME", "all")
+API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:7860")
+MODEL_NAME = os.getenv("MODEL_NAME", "baseline-agent")
+HF_TOKEN = os.getenv("HF_TOKEN")  # No default — must be provided externally
 
 
 # ─── Known good solutions for reproducible scoring ─────────────────
@@ -81,34 +94,64 @@ def log(tag: str, msg: str):
     print(f"[{tag}] {msg}", flush=True)
 
 
+def wait_for_server(base_url: str, timeout: int = 120):
+    """Wait for the environment server to become healthy."""
+    log("STEP", f"Waiting for server at {base_url}...")
+    start = time.time()
+    while time.time() - start < timeout:
+        try:
+            r = requests.get(f"{base_url}/health", timeout=5)
+            if r.status_code == 200:
+                log("STEP", f"Server is healthy (took {time.time()-start:.1f}s)")
+                return True
+        except requests.exceptions.ConnectionError:
+            pass
+        except Exception as e:
+            log("STEP", f"Health check error: {e}")
+        time.sleep(2)
+    log("STEP", f"Server did not respond within {timeout}s")
+    return False
+
+
 def run_inference():
     """Run the baseline agent through all tasks."""
-    log("START", f"SQLOps Baseline Inference — {BASE_URL}")
+    log("START", f"task=sqlops_all model={MODEL_NAME} env={API_BASE_URL}")
+
+    # Wait for server to be ready
+    if not wait_for_server(API_BASE_URL):
+        log("END", "Server unreachable — aborting")
+        return 0.0
+
     total_reward = 0.0
     task_ids = list(SOLUTIONS.keys())
-
-    if TASK_NAME != "all" and TASK_NAME in SOLUTIONS:
-        task_ids = [TASK_NAME]
+    step_num = 0
 
     for task_idx, task_id in enumerate(task_ids):
         # Reset to the specific task
-        log("STEP", f"Resetting to task {task_idx}: {task_id}")
+        step_num += 1
+        log("STEP", f"step={step_num} action=reset task_index={task_idx} task={task_id}")
         try:
-            r = requests.post(f"{BASE_URL}/reset", params={"task_index": task_idx}, timeout=30)
+            r = requests.post(
+                f"{API_BASE_URL}/reset",
+                params={"task_index": task_idx},
+                timeout=30,
+            )
             r.raise_for_status()
             reset_data = r.json()
-            log("STEP", f"Reset OK — current task: {reset_data.get('observation', {}).get('task_id', '?')}")
+            current_task = reset_data.get("observation", {}).get("task_id", "?")
+            log("STEP", f"step={step_num} reset_ok=true current_task={current_task}")
         except Exception as e:
-            log("STEP", f"Reset failed: {e}")
+            log("STEP", f"step={step_num} reset_ok=false error={e}")
             continue
 
         # Submit the solution
         solution = SOLUTIONS[task_id]
-        log("STEP", f"Submitting solution for {task_id}")
+        step_num += 1
+        log("STEP", f"step={step_num} action=submit task={task_id}")
 
         try:
             r = requests.post(
-                f"{BASE_URL}/step",
+                f"{API_BASE_URL}/step",
                 json={
                     "sql_query": solution["sql_query"].strip(),
                     "reasoning": solution["reasoning"],
@@ -125,26 +168,36 @@ def run_inference():
             score = obs.get("partial_score", 0.0)
 
             total_reward += reward
-            log("STEP", f"task={task_id} reward={reward:.2f} score={score:.2f} done={done}")
-            log("STEP", f"feedback: {feedback[:120]}")
+            log("STEP", f"step={step_num} task={task_id} reward={reward:.2f} "
+                f"score={score:.2f} done={done}")
+            if feedback:
+                log("STEP", f"step={step_num} feedback={feedback[:200]}")
 
         except Exception as e:
-            log("STEP", f"Step failed for {task_id}: {e}")
+            log("STEP", f"step={step_num} task={task_id} error={e}")
 
     # Final state
     try:
-        r = requests.get(f"{BASE_URL}/state", timeout=10)
+        r = requests.get(f"{API_BASE_URL}/state", timeout=10)
         state = r.json()
-        log("STEP", f"Final state: steps={state.get('steps_taken', 0)} "
-            f"cumulative_reward={state.get('cumulative_reward', 0.0):.2f} "
-            f"scores={json.dumps(state.get('task_scores', {}))}")
-    except Exception:
-        pass
+        final_scores = state.get("task_scores", {})
+        cumulative = state.get("cumulative_reward", 0.0)
+        steps = state.get("steps_taken", 0)
+        log("STEP", f"final_state steps={steps} "
+            f"cumulative_reward={cumulative:.2f} "
+            f"scores={json.dumps(final_scores)}")
+    except Exception as e:
+        log("STEP", f"state_fetch_error={e}")
 
-    log("END", f"Total reward: {total_reward:.2f}")
+    log("END", f"success=true total_reward={total_reward:.2f} "
+        f"tasks_completed={len(task_ids)} model={MODEL_NAME}")
     return total_reward
 
 
 if __name__ == "__main__":
-    score = run_inference()
-    sys.exit(0 if score > 0 else 1)
+    try:
+        score = run_inference()
+        sys.exit(0)
+    except Exception as e:
+        print(f"[END] error={e}", flush=True)
+        sys.exit(1)
